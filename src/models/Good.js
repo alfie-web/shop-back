@@ -25,6 +25,10 @@ const GoodModel = db.define('Good', {
 	tags: {
 		type: DataTypes.ARRAY(DataTypes.STRING),
 		defaultValue: []
+	},
+	colors: {
+		type: DataTypes.ARRAY(DataTypes.STRING),
+		defaultValue: []
 	}
 }, {
 	timestamps: true

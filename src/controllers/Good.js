@@ -48,6 +48,7 @@ class Good {
 		const postData = {
 			name: req.body.name,
 			cost: req.body.cost,
+			tags: req.body.tags ? ['all', ...req.body.tags] : ["all"]
 		}
 
 		try {
@@ -55,7 +56,7 @@ class Good {
 				name: postData.name, 
 				cost: postData.cost,
 				image: null,
-				tags: ["игры"]
+				tags: postData.tags
 			});
 
 			console.log('newGood', newGood)

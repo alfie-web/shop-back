@@ -6,6 +6,8 @@ const groupsRoutes = express.Router();
 const groupsCtrl = new GroupController;
 
 groupsRoutes.get('/', groupsCtrl.getAll);
+groupsRoutes.get('/goods', groupsCtrl.getGoodsByGroup);
+// groupsRoutes.get('/goods/:groupId', groupsCtrl.getGoodsByGroup);
 groupsRoutes.get('/:id', groupsCtrl.getById);
 groupsRoutes.post('/create', groupsCtrl.create);
 groupsRoutes.patch('/update', groupsCtrl.update);

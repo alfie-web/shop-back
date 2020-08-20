@@ -6,7 +6,8 @@ const db = new Sequelize({
 	password: '677091418237',
 	host: 'localhost',
 	port: 5432,
-	dialect: 'postgres'
+	dialect: 'postgres',
+	logging: false
 });
 
 db.sync();

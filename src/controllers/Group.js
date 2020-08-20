@@ -6,11 +6,33 @@ class Group {
 	// Получаем все группы
 	// TODO: В дальнейшем будет пагинация
 	getAll = async (req, res) => {
+		// Тут то оно мне не нужно по факту, для пагинации по клику на кнопку показать ещё будет отдельный роут вообще
+		// const currentGroupPage = 0;
+		// const groupLimit = 3;
+
+		// const groupOffset = groupLimit * currentGroupPage;
+		// const groupIsLastPage = groupOffset + groupLimit >= feedItemsCount;		// Тогда это придётся делать на фронте, хотя хз как
+
+		// const groupItemsCount = GroupModel.count()
+
 		try {
+			// const groups = await GroupModel.findAll({
+			// 	include: [{		// вместе с товарами
+			// 		model: GoodModel,
+			// 		// offset: 5, 
+			// 		// limit: 3	// Вот дела, эта штука вообще не работает со связью many-to-many
+			// 		// Единственный верный способ, это 2 запроса
+			// 		// Первый на получение групп, без товаров
+			// 		// Затем на фронте перебирая в цикле на кождую итерацию делать запрос на получение товаров
+			// 		// Там уже можно лимитировать
+			// 	}]
+			// })
+
 			const groups = await GroupModel.findAll({
-				include: [{		// вместе с товарами
-					model: GoodModel
-				}]
+				order: [
+					// Will escape title and validate DESC against a list of valid direction parameters
+					['createdAt', 'DESC'],
+				]
 			})
 
 			res.json({
@@ -20,6 +42,67 @@ class Group {
 		} catch (e) {
 			console.log(e)
 	
+			res.status(400).json({
+				status: 'error',
+				message: `Самсинг вент ронг`
+			})
+		}
+	}
+
+	// getAll = async (req, res) => {
+	// 	try {
+	// 		const groups = await GroupModel.findAll({
+	// 			include: [{		// вместе с товарами
+	// 				model: GoodModel
+	// 			}]
+	// 		})
+
+	// 		res.json({
+	// 			status: 'success',
+	// 			data: groups
+	// 		})
+	// 	} catch (e) {
+	// 		console.log(e)
+	
+	// 		res.status(400).json({
+	// 			status: 'error',
+	// 			message: `Самсинг вент ронг`
+	// 		})
+	// 	}
+	// }
+
+	getGoodsByGroup = async (req, res) => {
+		const groupId = req.query.group;
+		const position = req.query.position;
+
+		const limit = 3;
+		const skip = limit * position;
+
+		console.log('SKIP', skip)
+
+		try {
+			const findedGroup = await GroupModel.findByPk(groupId);
+			const totalGoodsCount = await findedGroup.countGoods();
+			const isLastPage = skip + limit >= totalGoodsCount;
+
+			// console.log('totalGoodsCount', totalGoodsCount)
+
+			const goods = await findedGroup.getGoods({
+				limit,
+				offset: skip,
+				order: [
+					['createdAt', 'DESC'],		// DESC, ASC
+				]
+			})
+
+			res.json({
+				status: 'success',
+				data: {
+					goods,
+					isLastPage
+				}
+			})
+		} catch (e) {
 			res.status(400).json({
 				status: 'error',
 				message: `Самсинг вент ронг`
